@@ -1,18 +1,8 @@
 const mysql = require('mysql');
 const multer = require('multer');
+const path = require('path')
 const fs = require('fs');
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + '.' + file.originalname.split('.').pop());
-  }
-});
-
-const upload = multer({ storage: storage });
 
 const connection = mysql.createConnection({
   host: 'localhost',
@@ -20,6 +10,19 @@ const connection = mysql.createConnection({
   password: '',
   database: 'customerInfo'
 });
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads')
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.fieldname + '_' + Date.now() + path.extname(file.originalname))
+  }
+})
+
+const upload = multer({
+  storage: storage
+})
 
 connection.connect((err) => {
   if (err) {
@@ -63,29 +66,33 @@ const createCustomersTable = () => {
   });
 };
 
-const insertCustomer = (name, email, phone, image) => {
-    console.log(image); // add this line to check if imageFilePath is being passed correctly
-    const query = `
-      INSERT INTO customers (name, email, phone, image) 
-      VALUES (?, ?, ?, ?)
-    `;
-    
-    if (fs.existsSync(image)) {
-        const imageFile = fs.readFileSync(image);
-        const imageBuffer = Buffer.from(imageFile);
-        
-        connection.query(query, [name, email, phone, imageBuffer], (err, results) => {
-          if (err) {
-            console.error('Error inserting customer: ', err);
-            return;
-          }
-        
-          console.log('Customer inserted successfully!');
-        });
-      } else {
-        console.error('Error inserting customer: Image file does not exist');
-      }
-  };
+const insertCustomer = (image, res) => {
+  const sql = 'UPDATE customers SET image = ?';
+
+  connection.query(sql, [image], (err, result) => {
+    if (err) {
+      console.error('Error inserting customer: ', err);
+      return res.status(500).send('Error inserting customer');
+    }
+    res.json({Status: "Success"});
+  });
+};
+
+  // const query = `
+  //     INSERT INTO customers (name, email, phone) 
+  //     VALUES (?, ?, ?)
+  //   `;
+
+  // connection.query(query, [name, email, phone], (err, results) => {
+  //   if (err) {
+  //     console.error('Error inserting customer: ', err);
+  //     return;
+  //   }
+
+  //   console.log('Customer inserted successfully!');
+  // });
+
+
 
 module.exports = {
   createCustomersTable,
