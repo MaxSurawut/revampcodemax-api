@@ -13,10 +13,15 @@ app.use(cors({
 
 db.createCustomersTable();
 
+
+app.get('/allcustomer', (req, res) => {
+  db.showAllCustomer(res)
+})
+
 app.post('/customers', db.upload.single('image'), (req, res) => {
-  console.log(req.file);
   const image = req.file.filename;
-  db.insertCustomer(image, res);
+  const {name, email, phone} = req.body;
+  db.insertCustomer(name, email, phone, image, res);
 });
 
 app.listen(3000, () => {

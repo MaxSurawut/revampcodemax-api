@@ -66,10 +66,10 @@ const createCustomersTable = () => {
   });
 };
 
-const insertCustomer = (image, res) => {
-  const sql = 'UPDATE customers SET image = ?';
+const insertCustomer = (name, email, phone, image, res) => {
+  const sql = 'INSERT INTO customers (name, email, phone, image) VALUES (?, ?, ?, ?)';
 
-  connection.query(sql, [image], (err, result) => {
+  connection.query(sql, [name, email, phone, image], (err, result) => {
     if (err) {
       console.error('Error inserting customer: ', err);
       return res.status(500).send('Error inserting customer');
@@ -77,6 +77,15 @@ const insertCustomer = (image, res) => {
     res.json({Status: "Success"});
   });
 };
+
+const showAllCustomer = (res) => {
+  const query = 'SELECT * FROM customers'
+
+  connection.query(query, (err, result) => {
+    if(err) throw err
+    res.send(result)
+  })
+}
 
   // const query = `
   //     INSERT INTO customers (name, email, phone) 
@@ -97,5 +106,6 @@ const insertCustomer = (image, res) => {
 module.exports = {
   createCustomersTable,
   insertCustomer,
-  upload
+  upload,
+  showAllCustomer
 };
