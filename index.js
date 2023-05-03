@@ -19,8 +19,12 @@ app.get('/allcustomer', (req, res) => {
 })
 
 app.post('/customers', db.upload.single('image'), (req, res) => {
-  const image = req.file.filename;
+  let image = '';
   const {name, email, phone} = req.body;
+
+  if(req.file){
+    image = req.file.filename
+  }
   db.insertCustomer(name, email, phone, image, res);
 });
 
