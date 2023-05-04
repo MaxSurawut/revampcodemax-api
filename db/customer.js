@@ -8,7 +8,7 @@ const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'customerInfo'
+  database: 'customerinfo'
 });
 
 const storage = multer.diskStorage({
@@ -107,5 +107,6 @@ module.exports = {
   createCustomersTable,
   insertCustomer,
   upload,
-  showAllCustomer
+  showAllCustomer,
+  connection
 };
