@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('./db/customer');
 const blogModule = require('./blog/blogSchema')
+const adminModule = require('./admin/adminSchema')
 const cors = require('cors')
 
 const app = express();
@@ -14,6 +15,7 @@ app.use(cors({
 
 db.createCustomersTable();
 blogModule.createBlogTable()
+adminModule.createAdminTable();
 
 
 app.get('/allcustomer', (req, res) => {
@@ -39,6 +41,18 @@ app.get('/allblog', (req, res) => {
   blogModule.showAllBlogContent(res)
 })
 
+app.post('/login', (req, res)=> {
+  const { email, password } = req.body;
+
+  adminModule.loginValidation(email, password, res)
+  
+})
+
+app.post('/register', (req, res) => {
+  const { email, password } = req.body;
+
+  adminModule.adminRegister(email, password, res)
+})
 app.listen(3000, () => {
   console.log('Server listening on port 3000');
 });
