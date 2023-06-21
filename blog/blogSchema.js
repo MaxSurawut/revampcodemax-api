@@ -40,9 +40,18 @@ const loadBlog = (id, res) => {
     });
 };
 
+const insertBlog = (title, category, text, image, res) => {
+    const sql = 'INSERT into blogs (title, category, body, image) VALUE (?,?,?,?)'
+
+    db.connection.query(sql, [title, category, text, image], (err, result)=> {
+        if (err) throw err;
+        res.json({Status: "Success"});
+    })
+}
 
 module.exports = {
     createBlogTable,
     loadBlog,
-    showAllBlogContent
+    showAllBlogContent,
+    insertBlog
 }

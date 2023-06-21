@@ -42,6 +42,17 @@ app.get('/allblog', (req, res) => {
   blogModule.showAllBlogContent(res)
 })
 
+app.post('/addblog', db.upload.single('image'), (req, res) => {
+  let image = ''
+  const {title, category, text} = req.body;
+
+  if(req.file){
+    image = req.file.filename
+  }
+
+  blogModule.insertBlog(title, category, text, image, res)
+})
+
 app.post('/login', (req, res)=> {
   const { email, password } = req.body;
 
