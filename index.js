@@ -2,6 +2,7 @@ const express = require('express');
 const db = require('./db/customer');
 const blogModule = require('./blog/blogSchema')
 const adminModule = require('./admin/adminSchema')
+const portfolioModule = require('./portfolio/portfolio')
 const cors = require('cors')
 
 const app = express();
@@ -70,6 +71,22 @@ app.post('/validate-token', (req, res, next) => {
   const token = req.headers.authorization.split(' ')[1];
   console.log(token)
   adminModule.validateToken(token,req, res, next)
+})
+
+app.post('/addportfolio', db.upload.single('image'), (req, res) => {
+  let image = ''
+  const { title, link, category } = req.body
+
+  if(req.file){
+    image = req.file.filename;
+  }
+
+  portfolioModule.addPortFolio(title, link, category, image, res)
+  
+})
+
+app.get('/getallportfolio', (req, res) => {
+  portfolioModule.getAllPortfolio(res)
 })
 
 app.listen(3000, () => {
